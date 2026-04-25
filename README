@@ -1,18 +1,96 @@
+# 🐳 Airflow-Docker: API to File Pipeline
 
-## **Prerequisites**
+A modern **Airflow 3.x** data pipeline designed to fetch data from a REST API and persist it to a local output file using the new **Task SDK** and **Docker Compose**.
 
-Before starting, make sure you have the following installed:
+## 🏗️ Project Architecture
+- **Airflow 3.0+**: Utilizing the new API-driven Task execution.
+- **Docker**: Containerized environment for consistent deployment.
+- **Task SDK**: Lightweight task execution without direct DB access.
+- **Volumes**: Persistent storage for DAGs, Logs, and JSON output.
 
-### **Step 0: Install Docker Desktop**
+## 📂 Project Structure
+```text
+airflow-docker/
+├── dags/               # DAG definitions
+├── output/             # Local storage for fetched JSON data (Mapped to Host)
+├── logs/               # Airflow execution logs
+├── docker-compose.yaml # Service orchestration (API Server, Scheduler, DB)
+├── requirements.txt    # Python dependencies
+└── README.md           
+```
 
-Download and install Docker Desktop:
+## 🚀 Quick Start
 
-* [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
+### 1. Prerequisites
+- **Docker Desktop**: [Download here](https://www.docker.com/products/docker-desktop/)
+- **Git**: [Download here](https://git-scm.com/install/)
 
-### **Step 1: Install Git (if not already installed)**
+### 2. Clone the Repository
+Run the following command to pull the project to your local machine:
+```bash
+git clone https://github.com
+cd airflow-docker
+```
 
-Download from:
-
-* [https://git-scm.com/install/](https://git-scm.com/install/)
+### 3. Initialize Folders & Permissions
+Ensure the workspace is ready for Docker:
+```bash
+mkdir -p dags output logs
+chmod 777 output logs  # Critical for Docker write access
+```
 
 ---
+
+## 💻 Local Setup (Development)
+If you want to run or test the DAG logic locally without Docker:
+
+1. **Create a Virtual Environment:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Windows: venv\Scripts\activate
+   ```
+
+2. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run Airflow Standalone (Airflow 3.x):**
+   ```bash
+   export AIRFLOW_HOME=$(pwd)
+   airflow standalone
+   ```
+
+---
+
+## 🐳 Docker Deployment (Production-like)
+To run the full containerized stack:
+
+### 1. Build and Start
+```bash
+docker-compose up -d
+```
+
+### 2. Access the Dashboard
+- **URL**: `http://localhost:8080`
+- **Default Credentials**: `airflow` / `airflow`
+
+## 🛠️ How the Pipeline Works
+The main DAG (`api_to_file_storage`) performs the following steps:
+1.  **Fetch**: Connects to the external API using the `requests` library.
+2.  **Save**: Writes the resulting JSON directly to `/opt/airflow/output/`.
+3.  **Sync**: Because of the Docker Volume mapping, the file will immediately appear in your local `./output` folder on your computer.
+
+## 📦 Requirements
+Ensure your `requirements.txt` contains:
+```text
+apache-airflow>=3.0.0
+apache-airflow-task-sdk
+apache-airflow-providers-standard
+requests
+```
+
+## 📝 Troubleshooting
+- **ModuleNotFoundError**: Ensure `apache-airflow-task-sdk` is installed in your image.
+- **Permission Denied**: If the output file isn't appearing, check folder permissions: `chmod 777 output`.
+- **DAG not appearing**: Refresh the UI and check `logs/` for parsing errors.
