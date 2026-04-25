@@ -1,0 +1,11 @@
+# Core Airflow 3.0
+apache-airflow>=3.0.0
+
+# Required for 'from airflow.sdk import DAG'
+apache-airflow-task-sdk
+
+# Required for 'from airflow.providers.standard...'
+apache-airflow-providers-standard
+
+# Recommended: Standard FAB provider for the UI/Auth
+apache-airflow-providers-fab

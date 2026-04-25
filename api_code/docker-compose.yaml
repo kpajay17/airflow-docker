@@ -1,0 +1,13 @@
+services:
+  api:
+    build: .
+    container_name: fastapi-app
+    ports:
+      - "5001:5000"
+    networks:
+      - airflow-docker_default
+    restart: unless-stopped
+
+networks:
+  airflow-docker_default:
+    external: true
